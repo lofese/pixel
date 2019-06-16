@@ -1,0 +1,152 @@
+<html>
+	<head>
+		<title>Pixel</title>
+		<link rel = 'stylesheet' href = 'index.css'>
+	</head>
+	
+	<body>
+		<canvas id='canvas'></canvas>
+		<script>
+			
+			var screen = [];
+			screen['width'];
+			screen['height'];
+			screen['paint'] = function (picture, x, y) {
+				document.getElementById('canvas').getContext('2d').drawImage(picture, x, y);
+			}
+			screen['update'] = function () {
+					document.getElementById('canvas').fillStyle = "#E5CCCC";
+					document.getElementById('canvas').getContext('2d').fillRect(0, 0, document.body.clientWidth, document.body.clientHeight);
+					
+					document.getElementById('canvas').width = document.body.clientWidth;
+					document.getElementById('canvas').height = document.body.clientHeight;
+					
+					screen['width'] = document.body.clientWidth;
+					screen['height'] = document.body.clientHeight;
+			}
+			
+			
+			var earth = [];
+			earth['picture'] = [];
+			for (var i = 0; i <= 1; i++) {
+				earth['picture'][i] = new Image();
+				earth['picture'][i].src = 'earth/' + i + '.png';
+			}
+			earth['picture']['width'] = 200;
+			earth['picture']['height'] = 400;
+			earth['picture']['x'];
+			earth['picture']['y'];
+			earth['map'] = [];
+			earth['map']['x'];
+			earth['map']['y'];
+			earth['update'] = function () {
+				var number;
+				if (screen['width'] >= screen['height']) {
+					number = Math.ceil((screen['width'] / 2) / 100);
+				} else if (screen['width'] <= screen['height']) {
+					number = Math.ceil((screen['height'] / 2) / 58);
+				}
+				
+				for (var i = - number; i <= number; i++) {
+					for (var j = - number; j <= number; j++) {
+						earth['picture']['x'] = (screen['width'] / 2) + (j * 100) + (i * 100) - (player['x'] - Math.trunc(player['x'] / 100) * 100) - (player['y'] - Math.trunc(player['y'] / 100) * 100);
+						earth['picture']['y'] = (screen['height'] / 2) - (earth['picture']['height'] / 2) + (j * 58) - (i * 58) - ((player['x'] - Math.trunc(player['x'] / 100) * 100) * 0.58) + ((player['y'] - Math.trunc(player['y'] / 100) * 100) * 0.58);
+						
+						if (earth['picture']['x'] <= - 200) {
+							continue;
+						} else if (earth['picture']['x'] >= screen['width']) {
+							continue;
+						}  else if (earth['picture']['y'] <= - 200 - 58) {
+							continue;
+						}  else if (earth['picture']['y'] >= screen['height'] - 200 + 58) {
+							continue;
+						}
+						
+						earth['map']['x'] = (Math.trunc(player['x'] / 100) * 100) + (j * 100);
+						earth['map']['y'] = (Math.trunc(player['y'] / 100) * 100) + (i * 100);
+						
+						if (!earth['map'][earth['map']['x']]) {
+							earth['map'][earth['map']['x']] = [];
+						}
+						if (!earth['map'][earth['map']['x']][earth['map']['y']]) {
+							earth['map'][earth['map']['x']][earth['map']['y']] = [];
+							earth['map'][earth['map']['x']][earth['map']['y']]['score'] = 0;
+						}
+						
+						if (earth['map'][earth['map']['x']][earth['map']['y']]['score'] == 0) {
+							screen['paint'](earth['picture'][0], earth['picture']['x'], earth['picture']['y']);
+						} else if (earth['map'][earth['map']['x']][earth['map']['y']]['score'] == 1) {
+							screen['paint'](earth['picture'][1], earth['picture']['x'], earth['picture']['y']);
+						}
+					}
+				}
+			}
+			
+			var player = [];
+			player['x'] = 500;
+			player['y'] = 500;
+			player['picture'] = [];
+			for (var i = 0; i < 1; i++) {
+				player['picture'][i] = new Image();
+				player['picture'][i].src = 'player/' + i + '.png';
+			}
+			player['picture']['width'] = 200;
+			player['picture']['height'] = 400;
+			player['picture']['x'];
+			player['picture']['y'];
+			player['update'] = function () {
+				player['picture']['x'] = screen['width'] / 2 - player['picture']['width'] / 2;
+				player['picture']['y'] = screen['height'] / 2 - player['picture']['height'] / 2;
+				
+				screen['paint'](player['picture'][0], player['picture']['x'], player['picture']['y']);
+			}
+			
+			
+			setInterval(function () {
+				screen['update']();
+				earth['update']();
+				player['update']();
+			}, 40);
+			
+			
+			document.body.onkeydown = function(event) {
+				if (event.which == 37) {
+					player['x'] -= 10;
+				}
+				if (event.which == 38) {
+					player['y'] += 10;
+				}
+				if (event.which == 39) {
+					player['x'] += 10;
+				}
+				if (event.which == 40) {
+					player['y'] -= 10;
+				}
+				if (event.which == 32) {
+					earth['map'][Math.trunc(player['x'] / 100) * 100][Math.trunc(player['y'] / 100) * 100]['score'] = 1;
+					//console.log(player['x']);
+					//console.log(player['y']);
+					//console.log(earth['map']);
+				}
+			}
+			
+			/*
+			navigator.geolocation.getCurrentPosition(position_geolocation, error_geolocation);
+			function position_geolocation (position) {
+				player.x = position.coords.latitude.toFixed(7) * 10000000;
+				player.y = position.coords.longitude.toFixed(7) * 10000000;
+				console.log('ok');
+			}
+			function error_geolocation (error) {
+				console.log('error geolocation');
+			}
+			*/
+			/*
+			document.body.onmousedown = function(event) {
+				xmlhttprequest.open('GET','https://api.telegram.org/bot790716188:AAGKf4Ei8aUmEsC4zNY_8zlrfYTPudVK5js/sendMessage?chat_id=-354775351&text=' + 'x: ' + player.x + ' y: ' + player.y, true);
+				xmlhttprequest.send();
+			}
+			*/
+		</script>
+	</body>
+</html>
